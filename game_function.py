@@ -60,10 +60,11 @@ def fire_bullet(ai_setting, screen, ship, bullets):
 def update_bullets(bullets):
     # 删除无效子弹
     # ??为何要copy
+    bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-
+    print(len(bullets))
 
 def create_alien(ai_setting, screen, aliens, alien_number):
     alien = Alien(ai_setting, screen)
@@ -83,4 +84,4 @@ def create_fleet(ai_setting, screen, aliens):
     number_aliens_x = int(avaliable_space_x / (2 * alien_width))
 
     for alien_number in range(number_aliens_x):
-        alien = Alien(ai_setting, screen)
+        create_alien(ai_setting, screen, aliens, alien_number)
