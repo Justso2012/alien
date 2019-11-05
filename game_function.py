@@ -3,6 +3,7 @@ import sys
 import pygame
 from bullet import Bullet
 from alien import Alien
+from game_stats import GameStats
 
 
 # 监视键盘按下事件
@@ -26,7 +27,7 @@ def check_keyup(event, ship):
 
 
 # 监视鼠标、键盘事件
-def check_events(ai_setting, screen, ship, bullets):
+def check_events(ai_setting, screen, ship, bullets, stats, play_button):
     # 监视键盘、鼠标事件
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -35,10 +36,23 @@ def check_events(ai_setting, screen, ship, bullets):
             check_keydown(event, ai_setting, screen, ship, bullets)
         elif event.type == pygame.KEYUP:
             check_keyup(event, ship)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            print("click down")
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_play_button(stats, play_button, mouse_x, mouse_y)
+            print("x:", play_button.rect.x, " y:", play_button.rect.y)
+            print("mouse_x:", mouse_x, " mouse_y:", mouse_y)
+
+
+def check_play_button(stats, play_button, mouse_x, mouse_y):
+    ret = play_button.rect.collidepoint(mouse_x, mouse_y)
+    if ret:
+        print("inside")
+        stats.game_active = True
 
 
 # 更新屏幕
-def update_screen(ai_setting, screen, ship, bullets, aliens):
+def update_screen(ai_setting, screen, ship, bullets, aliens, stats, play_button):
     # 重绘
     screen.fill(ai_setting.bg_color)
     for bullet in bullets.sprites():
@@ -47,6 +61,11 @@ def update_screen(ai_setting, screen, ship, bullets, aliens):
 
     for alien in aliens.sprites():
         alien.blitme()
+
+    if not stats.game_active:
+        play_button.draw_button()
+    else:
+        pygame.mouse.set_visible(False)
 
     # 显示最近绘制屏幕
     pygame.display.flip()
@@ -65,6 +84,7 @@ def update_bullets(bullets):
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
     print(len(bullets))
+
 
 def create_alien(ai_setting, screen, aliens, alien_number):
     alien = Alien(ai_setting, screen)
